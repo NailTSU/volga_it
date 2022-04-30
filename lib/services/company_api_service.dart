@@ -22,7 +22,6 @@ class CompanyApiService {
   Future<String> getQuotePrice(String symbol) async {
     var query = symbol.split('.')[0];
     var response = await ApiService.get('${Api.quote}?symbol=$query');
-    log(response);
     return QuotePrice.fromJson(jsonDecode(response)).c.toString();
   }
 }

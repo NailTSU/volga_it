@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:volga_it/models/company_info.dart';
 import 'package:volga_it/services/company_api_service.dart';
@@ -36,7 +34,6 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
         builder: (context, snapshot) {
           if (snapshot.hasData && !widget.isLoading) {
             var data = snapshot.data as CompanyInfo;
-            log(snapshot.data.toString());
             return Container(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -69,9 +66,7 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 18)),
                           Text(
-                              data.marketCapitalization.toString() +
-                                  ' ' +
-                                  data.currency,
+                              data.marketCapitalization.toString(),
                               style: const TextStyle(
                                   color: Colors.yellow, fontSize: 18))
                         ],
@@ -98,7 +93,9 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
             return Container();
           }
 
-          return const Text('Loading...');
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.amber),
+          );
         });
   }
 }
