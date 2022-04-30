@@ -6,8 +6,9 @@ import 'package:volga_it/services/company_api_service.dart';
 
 class CompanyInfoContainer extends StatefulWidget {
   final String symbol;
+  final bool isLoading;
 
-  const CompanyInfoContainer({Key? key, required this.symbol})
+  const CompanyInfoContainer({Key? key, required this.symbol, this.isLoading = false})
       : super(key: key);
 
   @override
@@ -33,7 +34,7 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
     return FutureBuilder(
         future: _futureData,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && !widget.isLoading) {
             var data = snapshot.data as CompanyInfo;
             log(snapshot.data.toString());
             return Container(
@@ -97,7 +98,7 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
             return Container();
           }
 
-          return Container();
+          return const Text('Loading...');
         });
   }
 }
