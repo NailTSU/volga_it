@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:volga_it/components/company_info.dart';
 import 'package:volga_it/components/root_wrapper.dart';
+import 'package:volga_it/models/company_base.dart';
+import 'package:volga_it/models/company_info.dart';
 import 'package:volga_it/models/company_view_args.dart';
+import 'package:volga_it/services/company_api_service.dart';
 import 'package:volga_it/services/favourite_service.dart';
 
 class CompanyView extends StatefulWidget {
@@ -12,11 +15,14 @@ class CompanyView extends StatefulWidget {
 }
 
 class _CompanyViewState extends State<CompanyView> {
+  late CompanyApiService _apiService;
+  late Future<CompanyInfo> _companyData;
   late FavouriteService _favouriteService;
-  late Future<List<String>> _companiesList;
+  late Future<List<CompanyBase>> _companiesList;
   bool _isLoading = false;
 
   _CompanyViewState() {
+    _apiService = CompanyApiService();
     _favouriteService = FavouriteService();
   }
 
@@ -26,15 +32,24 @@ class _CompanyViewState extends State<CompanyView> {
     _companiesList = _favouriteService.getItemsList();
   }
 
-  Future<void> _onFloatingButtonPress(String symbol, bool isToDelete) async {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    CompanyViewArgs args = ModalRoute.of(context)!.settings.arguments as CompanyViewArgs;
+    _companyData = _apiService.getCompanyBySymbol(args.symbol);
+  }
+
+  Future<void> _onFloatingButtonPress(CompanyViewArgs args, bool isToDelete) async {
     setState(() {
       _isLoading = true;
     });
 
+    var item = CompanyBase(description: args.name, symbol: args.symbol);
+
     if (isToDelete) {
-      await _favouriteService.deleteItem(symbol);
+      await _favouriteService.deleteItem(item);
     } else {
-      await _favouriteService.addItem(symbol);
+      await _favouriteService.addItem(item);
     }
 
     _companiesList = _favouriteService.getItemsList();
@@ -50,18 +65,18 @@ class _CompanyViewState extends State<CompanyView> {
 
     return RootWrapper(
       title: args.name,
-      body: CompanyInfoContainer(symbol: args.symbol, isLoading: _isLoading),
+      body: CompanyInfoContainer(futureData: _companyData, isLoading: _isLoading),
       floatingActionButton: FutureBuilder(
         future: _companiesList,
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<CompanyBase>> snapshot) {
           if (snapshot.hasData) {
-            bool isToDelete = snapshot.data?.contains(args.symbol) ?? false;
+            bool isToDelete = snapshot.data?.any((element) => args.symbol == element.symbol) ?? false;
 
             return FloatingActionButton(
                 backgroundColor: isToDelete ? Colors.redAccent : Colors.amber,
                 child: Icon(isToDelete ? Icons.delete : Icons.add, size: 32),
                 onPressed: () {
-                  _onFloatingButtonPress(args.symbol, isToDelete);
+                  _onFloatingButtonPress(args, isToDelete);
                 });
           }
 

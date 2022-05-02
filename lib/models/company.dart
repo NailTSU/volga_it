@@ -1,15 +1,15 @@
-class Company {
-  String description;
+import 'package:volga_it/models/company_base.dart';
+
+class Company extends CompanyBase {
   String displaySymbol;
-  String symbol;
   String type;
 
   Company({
-    required this.description,
     required this.displaySymbol,
-    required this.symbol,
-    required this.type
-  });
+    required this.type,
+    description,
+    symbol
+  }) : super(description: description, symbol: symbol);
 
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(

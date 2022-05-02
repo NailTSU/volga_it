@@ -1,38 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:volga_it/models/company_info.dart';
-import 'package:volga_it/services/company_api_service.dart';
 
-class CompanyInfoContainer extends StatefulWidget {
-  final String symbol;
+class CompanyInfoContainer extends StatelessWidget {
   final bool isLoading;
+  final Future<CompanyInfo> futureData;
 
-  const CompanyInfoContainer({Key? key, required this.symbol, this.isLoading = false})
-      : super(key: key);
-
-  @override
-  _CompanyInfoContainerState createState() => _CompanyInfoContainerState();
-}
-
-class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
-  late CompanyApiService _apiService;
-  late Future<CompanyInfo> _futureData;
-
-  _CompanyInfoContainerState() {
-    _apiService = CompanyApiService();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _futureData = _apiService.getCompanyBySymbol(widget.symbol);
-  }
+  const CompanyInfoContainer({
+    Key? key,
+    required this.futureData,
+    this.isLoading = false
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _futureData,
+        future: futureData,
         builder: (context, snapshot) {
-          if (snapshot.hasData && !widget.isLoading) {
+          if (snapshot.hasData && !isLoading) {
             var data = snapshot.data as CompanyInfo;
             return Container(
                 padding: const EdgeInsets.all(20.0),
@@ -64,7 +48,7 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
                         children: [
                           const Text('Капитализация: ',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 18)),
+                              TextStyle(color: Colors.white, fontSize: 18)),
                           Text(
                               data.marketCapitalization.toString(),
                               style: const TextStyle(
@@ -78,7 +62,7 @@ class _CompanyInfoContainerState extends State<CompanyInfoContainer> {
                         children: [
                           const Text('Стоимость акций: ',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 18)),
+                              TextStyle(color: Colors.white, fontSize: 18)),
                           Text(data.quotePrice ?? '',
                               style: const TextStyle(
                                   color: Colors.yellow, fontSize: 18))

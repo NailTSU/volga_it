@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:volga_it/models/company_base.dart';
+
 import 'file_service.dart';
 
 class FavouriteService {
@@ -9,23 +11,27 @@ class FavouriteService {
     _fileService = FileService("favourite-items.json");
   }
 
-  Future<void> addItem(String item) async {
-    List<String> itemsList = await getItemsList();
-    Set<String> itemsSet = itemsList.toSet();
-    itemsSet.add(item);
-    _fileService.writeJsonToFile(jsonEncode(itemsSet.toList()));
-  }
+  Future<void> addItem(CompanyBase item) async {
+    List<CompanyBase> itemsList = await getItemsList();
+    bool isItemExists = itemsList.any((element) => element.symbol == item.symbol);
 
-  Future<void> deleteItem(String item) async {
-    List<String> itemsList = await getItemsList();
-    itemsList.remove(item);
+    if (!isItemExists) {
+      itemsList.add(item);
+    }
+
     _fileService.writeJsonToFile(jsonEncode(itemsList));
   }
 
-  Future<List<String>> getItemsList() async {
+  Future<void> deleteItem(CompanyBase item) async {
+    List<CompanyBase> itemsList = await getItemsList();
+    itemsList.removeWhere((element) => element.symbol == item.symbol);
+    _fileService.writeJsonToFile(jsonEncode(itemsList));
+  }
+
+  Future<List<CompanyBase>> getItemsList() async {
     var fileString = await _readItems();
     var result = jsonDecode(fileString) as List;
-    return List<String>.from(result);
+    return result.map((e) => CompanyBase.fromJson(e)).toList();
   }
 
   Future<String> _readItems() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:volga_it/views/company_view.dart';
+import 'package:volga_it/views/full_list_view.dart';
 import 'package:volga_it/views/home_view.dart';
 import 'package:volga_it/views/search_view.dart';
 
@@ -19,6 +20,7 @@ class Application extends StatelessWidget {
       initialRoute: Routes.root,
       routes: {
         Routes.root: (context) => const HomeView(),
+        Routes.list: (context) => const FullListView(),
         Routes.search: (context) => const SearchView(),
         Routes.company: (context) => const CompanyView(),
       },

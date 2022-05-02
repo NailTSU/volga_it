@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:volga_it/constants/api.dart';
 import 'package:volga_it/models/company_info.dart';
@@ -14,7 +13,6 @@ class CompanyApiService {
       company.quotePrice = await getQuotePrice(symbol);
       return company;
     } catch (e) {
-      log(e.toString());
       rethrow;
     }
   }
