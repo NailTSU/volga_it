@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:volga_it/components/company_info.dart';
 import 'package:volga_it/components/root_wrapper.dart';
+import 'package:volga_it/constants/routes.dart';
 import 'package:volga_it/models/company_base.dart';
 import 'package:volga_it/models/company_info.dart';
 import 'package:volga_it/models/company_view_args.dart';
@@ -19,7 +22,10 @@ class _CompanyViewState extends State<CompanyView> {
   late Future<CompanyInfo> _companyData;
   late FavouriteService _favouriteService;
   late Future<List<CompanyBase>> _companiesList;
+
+  CompanyViewArgs? _args;
   bool _isLoading = false;
+  bool _isHomeView = false;
 
   _CompanyViewState() {
     _apiService = CompanyApiService();
@@ -35,8 +41,28 @@ class _CompanyViewState extends State<CompanyView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    CompanyViewArgs args = ModalRoute.of(context)!.settings.arguments as CompanyViewArgs;
-    _companyData = _apiService.getCompanyBySymbol(args.symbol);
+    var routeContext = ModalRoute.of(context);
+
+    if (routeContext!.settings.name == Routes.root) {
+      setState(() {
+        _isHomeView = true;
+      });
+      onLoad();
+    } else {
+      setState(() {
+        _isHomeView = false;
+        _args = routeContext.settings.arguments as CompanyViewArgs;
+      });
+      _companyData = _apiService.getCompanyBySymbol(_args?.symbol ?? '');
+    }
+  }
+
+  void onLoad() async {
+    var list = await _favouriteService.getItemsList();
+    setState(() {
+      _args = CompanyViewArgs(name: list[0].description, symbol: list[0].symbol);
+    });
+    _companyData = _apiService.getCompanyBySymbol(list[0].symbol);
   }
 
   Future<void> _onFloatingButtonPress(CompanyViewArgs args, bool isToDelete) async {
@@ -61,22 +87,27 @@ class _CompanyViewState extends State<CompanyView> {
 
   @override
   Widget build(BuildContext context) {
-    CompanyViewArgs args = ModalRoute.of(context)!.settings.arguments as CompanyViewArgs;
+    if (_args?.symbol == null) {
+      return RootWrapper(
+        title: '',
+        body: Container(),
+      );
+    }
 
     return RootWrapper(
-      title: args.name,
+      title: _isHomeView ? 'Последнее' : _args?.name ?? '',
       body: CompanyInfoContainer(futureData: _companyData, isLoading: _isLoading),
-      floatingActionButton: FutureBuilder(
+      floatingActionButton: _isHomeView ? Container() : FutureBuilder(
         future: _companiesList,
         builder: (BuildContext context, AsyncSnapshot<List<CompanyBase>> snapshot) {
           if (snapshot.hasData) {
-            bool isToDelete = snapshot.data?.any((element) => args.symbol == element.symbol) ?? false;
+            bool isToDelete = snapshot.data?.any((element) => _args?.symbol == element.symbol) ?? false;
 
             return FloatingActionButton(
                 backgroundColor: isToDelete ? Colors.redAccent : Colors.amber,
                 child: Icon(isToDelete ? Icons.delete : Icons.add, size: 32),
                 onPressed: () {
-                  _onFloatingButtonPress(args, isToDelete);
+                  _onFloatingButtonPress(_args!, isToDelete);
                 });
           }
 

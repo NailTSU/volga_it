@@ -86,7 +86,7 @@ class _SearchContainerState extends State<SearchContainer> {
       controller: _searchQuery,
       autofocus: true,
       decoration: const InputDecoration(
-        hintText: 'Search...',
+        hintText: 'Поиск...',
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white30),
       ),

@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:volga_it/models/price_chart_item.dart';
 
 class CompanyInfo {
   String country;

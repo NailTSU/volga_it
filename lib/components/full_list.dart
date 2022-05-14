@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:volga_it/constants/routes.dart';
 import 'package:volga_it/models/company_base.dart';
+import 'package:volga_it/models/company_view_args.dart';
 import 'package:volga_it/services/favourite_service.dart';
 
 class FullList extends StatefulWidget {
@@ -43,7 +45,12 @@ class _FullListState extends State<FullList> {
                           bottom:
                           BorderSide(color: Colors.white, width: 1))),
                   child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, Routes.company,
+                            arguments: CompanyViewArgs(
+                                name: data?.description ?? '',
+                                symbol: data?.symbol ?? ''));
+                      },
                       child: Text(
                         data?.description ?? '',
                         textAlign: TextAlign.left,

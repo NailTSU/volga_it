@@ -68,7 +68,7 @@ class CompanyInfoContainer extends StatelessWidget {
                                   color: Colors.yellow, fontSize: 18))
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ));
           }

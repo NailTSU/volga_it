@@ -5,4 +5,5 @@ class Api {
   static const String search = root + '/search';
   static const String profile = root + '/stock/profile2';
   static const String quote = root + '/quote';
+  static const String price = root + '/stock/candle';
 }

@@ -8,7 +8,7 @@ class FullListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const RootWrapper(
-      title: 'List',
+      title: 'Избранное',
       body: FullList(),
     );
   }
